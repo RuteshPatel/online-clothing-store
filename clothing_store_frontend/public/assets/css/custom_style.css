@@ -1,0 +1,15 @@
+.header__menu ul li a {
+    font-weight: unset
+}
+.header__nav__option .price {
+    font-size: 16px;
+    font-weight: unset;
+}
+.banner.spad {
+    padding-top: 50px;
+}
+.banner__item .banner__item__pic img {
+    border-radius: 30px;
+    height: 500px;
+    width: 500px;
+}

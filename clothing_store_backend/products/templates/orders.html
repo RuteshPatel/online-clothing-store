@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="content order-content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'orders-list' %}">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'orders-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Order By Name</th>
+                                        <th>Product Name</th>
+                                        <th>Billing Address</th>
+                                        <th>Delivery Address</th>
+                                        <th>Status</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if orders_data %}
+                                        {% for order in orders_data %}
+                                            <tr>
+                                                <td>{{ order.id }}</td>
+                                                <td>{{ order.products.0.user_name }}</td>
+                                                <td>
+                                                    <ul>
+                                                        {% for product in order.products %}
+                                                            <li>{{ product.name }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </td>
+                                                <td>{{ order.billing_address }}</td>
+                                                <td>{{ order.delivery_address }}</td>
+                                                <td style="display: flex;vertical-align: middle;" class="status_td">
+                                                    <label class="selectgroup-item {% if order.status == 2 or order.status == 3 %}disabled-radio{% endif %}" title="Accepted" data-value="1"
+                                                           data-order_id="{{ order.id }}">
+                                                        <input type="radio" name="sizes_{{ order.id }}" value="1"
+                                                               class="selectgroup-input"
+                                                               {% if order.status == 1 %}checked{% endif %}>
+                                                        <span class="selectgroup-button" style="padding: unset">A</span>
+                                                    </label>
+                                                    <label class="selectgroup-item {% if order.status == 2 or order.status == 3 %}disabled-radio{% endif %}" title="Shipped" data-value="0"
+                                                           data-order_id="{{ order.id }}">
+                                                        <input type="radio" name="sizes_{{ order.id }}" value="0"
+                                                               class="selectgroup-input"
+                                                               {% if order.status == 0 %}checked{% endif %}>
+                                                        <span class="selectgroup-button" style="padding: unset">S</span>
+                                                    </label>
+                                                    <label class="selectgroup-item {% if order.status == 3 %}disabled-radio{% endif %}" title="Delivered" data-value="2"
+                                                           data-order_id="{{ order.id }}">
+                                                        <input type="radio" name="sizes_{{ order.id }}" value="2"
+                                                               class="selectgroup-input"
+                                                               {% if order.status == 2 %}checked{% endif %}>
+                                                        <span class="selectgroup-button"
+                                                              style="padding: unset">D</span>
+                                                    </label>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="9">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+{% block jquery %}
+    <script src="{% static 'js/orders.js' %}"></script>
+{% endblock jquery %}

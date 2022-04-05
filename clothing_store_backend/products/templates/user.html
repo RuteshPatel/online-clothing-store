@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'users-list' %}">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'users-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                                {% comment %}<a title="{{ card_title }}" class="btn btn-primary btn-round ml-auto modal_btn"
+                                   href="{% url 'product-add' %}"
+                                   data-toggle="modal" data-target="#modal">
+                                    <i class="fa fa-plus"></i>
+                                </a>{% endcomment %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Phone</th>
+                                        <th>Email</th>
+                                        <th>Address</th>
+                                        <th>Address Type</th>
+{#                                        <th>Action</th>#}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if user_data %}
+                                        {% for user in user_data %}
+                                            <tr>
+                                                <td>{{ user.name }}</td>
+                                                <td>{{ user.user_name }}</td>
+                                                <td>{{ user.phone }}</td>
+                                                <td>{{ user.email }}</td>
+                                                <td>
+                                                    {% for add in user.address %}
+                                                        <p>{{ add.address }}</p>
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    {% for add in user.address %}
+                                                        <p>{{ add.address_type }}</p>
+                                                    {% endfor %}
+                                                </td>
+{#                                                <td>Action</td>#}
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="9">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}
+{% block jquery %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".data-tables").DataTable({
+                "pageLength": 10,
+            });
+        })
+    </script>
+{% endblock jquery %}

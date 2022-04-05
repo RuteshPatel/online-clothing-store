@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'size-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                                {% comment %}<a title="{{ card_title }}" class="btn btn-primary btn-round ml-auto modal_btn" href="{% url 'size-add' %}"
+                                   data-toggle="modal" data-target="#modal">
+                                    <i class="fa fa-plus"></i>
+                                </a>{% endcomment %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Short Code</th>
+                                    <th>Action</th>
+                                    </thead>
+                                    <tbody>
+                                    {% if sizes %}
+                                        {% for size in sizes %}
+                                            <tr>
+                                                <td>{{ size.pk }}</td>
+                                                <td>{{ size.name }}</td>
+                                                <td>{{ size.short_code }}</td>
+                                                <td>
+                                                    {% csrf_token %}
+                                                    <div class="form-button-action listings">
+                                                        <a href="{% url 'size-update' size_id=size.pk %}"
+                                                           class="btn btn-link btn-secondary modal_btn"
+                                                           data-toggle="modal" data-target="#modal"><i
+                                                                class="fa fa-edit"></i></a>
+                                                        {% comment %}<a href="javascript:void(0)" class="btn btn-link btn-danger"
+                                                           onclick="DeleteSize({{ size.pk }})"><i
+                                                                class="fa fa-times"></i></a>{% endcomment %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="3">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+{% endblock content %}
+{% block jquery %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".data-tables").DataTable({
+                "pageLength": 5,
+            });
+        })
+
+        function DeleteSize(size_id) {
+            var data = {
+                'ids': size_id,
+                'module_names': "Size",
+                'ajaxs_url': 'size-add',
+                'responses_url': 'size-list',
+            }
+            DeleteFunction(data)
+        }
+    </script>
+{% endblock jquery %}

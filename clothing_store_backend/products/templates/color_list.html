@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/bootstrap-colorpicker.css' %}"/>
+{% endblock css %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'color-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                                <a title="{{ card_title }}" class="btn btn-primary btn-round ml-auto modal_btn" href="{% url 'color-add' %}"
+                                   data-toggle="modal" data-target="#modal">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <th>ID</th>
+                                    <th>Code</th>
+                                    <th>Color</th>
+                                    <th>Action</th>
+                                    </thead>
+                                    <tbody>
+                                    {% if colors %}
+                                        {% for color in colors %}
+                                            <tr>
+                                                <td>{{ color.pk }}</td>
+                                                <td>{{ color.color_code }}</td>
+                                                <td><span
+                                                        style="padding:5px 5px 10px 20px; background-color: {{ color.color_code }}">&nbsp;</span>
+                                                </td>
+                                                <td>
+                                                    {% csrf_token %}
+                                                    <div class="form-button-action listings">
+                                                        <a href="{% url 'color-update' color_id=color.pk %}"
+                                                           class="btn btn-link btn-secondary modal_btn"
+                                                           data-toggle="modal" data-target="#modal"><i class="fa fa-pencil"></i></a>
+                                                        <a href="javascript:void(0)" class="btn btn-link btn-danger"
+                                                           onclick="DeleteColor({{ color.pk }})"><i
+                                                                class="fa fa-times"></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="3">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+{% endblock content %}
+{% block jquery %}
+    <script src="{% static 'js/bootstrap-colorpicker.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".data-tables").DataTable({
+                "pageLength": 5,
+            });
+        })
+
+        function DeleteColor(color_id) {
+            var data = {
+                'ids': color_id,
+                'module_names': "Color",
+                'ajaxs_url': 'color-add',
+                'responses_url': 'color-list',
+            }
+            DeleteFunction(data)
+        }
+    </script>
+{% endblock jquery %}

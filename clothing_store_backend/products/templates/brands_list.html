@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'brands-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                                <a title="{{ card_title }}" class="btn btn-primary btn-round ml-auto modal_btn" href="{% url 'brands-add' %}"
+                                   data-toggle="modal" data-target="#modal">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if brands %}
+                                        {% for brand in brands %}
+                                            <tr>
+                                                <td>{{ brand.name }}</td>
+                                                <td>
+                                                    {% csrf_token %}
+                                                    <div class="form-button-action listings">
+                                                        <a href="{% url 'brands-update' brand_id=brand.pk %}"
+                                                           class="btn btn-link btn-secondary modal_btn"
+                                                           data-toggle="modal" data-target="#modal">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                        <a href="javascript:void(0)" class="btn btn-link btn-danger"
+                                                           onclick="DeleteBrands({{ brand.pk }})">
+                                                            <i class="fa fa-times"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="2">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+{% endblock content %}
+{% block jquery %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".data-tables").DataTable({
+                "pageLength": 10
+            });
+        })
+
+        function DeleteBrands(brand_id) {
+            var data = {
+                'ids': brand_id,
+                'module_names': "Brand",
+                'ajaxs_url': 'brands-add',
+                'responses_url': 'brands-list',
+            }
+            DeleteFunction(data)
+        }
+    </script>
+{% endblock jquery %}

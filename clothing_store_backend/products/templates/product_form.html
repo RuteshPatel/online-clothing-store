@@ -1,0 +1,541 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block css %}
+    <link href="{% static 'css/select2.min.css' %}" type="text/css" rel="stylesheet">
+{% endblock css %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'product-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <form method="POST" id="product_form" name="product_form" enctype="multipart/form-data"
+                          action="{% url 'product-add' %}">
+                        {% csrf_token %}
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-label d-block">Category</label>
+                                        {% for category in categories %}
+                                            <label class="form-radio-label">
+                                                <input class="form-radio-input" type="radio" name="category"
+                                                       value="{{ category.id }}"
+                                                       {% if category.id == products.category %}checked{% endif %}>
+                                                <span class="form-radio-sign"> {{ category.name }}</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    <label id="category-error" class="error" for="category"
+                                           style="display: none"></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group form-floating-label">
+                                        <input id="product_name" type="text" class="form-control input-border-bottom"
+                                               name="product_name" required value="{{ products.name }}">
+                                        <label for="product_name" class="placeholder">Product Name</label>
+                                    </div>
+                                    <label id="product_name-error" class="error" for="product_name"
+                                           style="display: none"></label>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group form-floating-label">
+                                        <select class="form-control input-border-bottom select_box" id="brand"
+                                                name="brands"
+                                                id="brands" required>
+                                            <option value="">&nbsp;</option>
+                                            {% for brand in brands %}
+                                                <option value="{{ brand.id }}"
+                                                        {% if brand.id == products.brands %}selected{% endif %}>{{ brand.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <label for="brands" class="placeholder">Brand</label>
+                                    </div>
+                                    <label id="brand-error" class="error" for="brand" style="display: none"></label>
+                                </div>
+                            </div>
+                            {% if not products.product_combination %}
+                                <div class="row" id="combination_0">
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Sizes</label>
+                                            <div class="selectgroup w-100">
+                                                <div class="row">
+                                                    {% for size in sizes %}
+                                                        <div class="col-lg-5 col-md-5 col-sm-5">
+                                                            <label class="selectgroup-item">
+                                                                <input type="radio" name="sizes_0" value="{{ size.id }}"
+                                                                       class="selectgroup-input"
+                                                                       required
+                                                                       {% if size.id in products.sizes %}checked{% endif %}>
+                                                                <span class="selectgroup-button">{{ size.short_code }}</span>
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <label id="sizes_0-error" class="error" for="sizes_0"
+                                                   style="display: none"></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label class="form-label">Colors</label>
+                                            <div class="row gutters-xs">
+                                                <div class="row">
+                                                    {% for color in colors %}
+                                                        <div class="col-auto">
+                                                            <label class="colorinput">
+                                                                <input name="colors_0" type="radio"
+                                                                       value="{{ color.id }}"
+                                                                       class="colorinput-input" required
+                                                                       {% if color.id in products.colors %}checked{% endif %}>
+                                                                <span class="colorinput-color"
+                                                                      style="background-color: {{ color.color_code }};"></span>
+                                                            </label>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <label id="colors_0-error" class="error" for="colors_0"
+                                                   style="display: none"></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="prices" class="placeholder">Price</label>
+                                            <input id="prices_0" type="text" class="form-control input-border-bottom"
+                                                   name="prices_0"
+                                                   required
+                                                   value="{{ products.price }}" placeholder="Price">
+                                        </div>
+                                        <label id="prices_0-error" class="error" for="prices_0"
+                                               style="display: none"></label>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <label for="stocks" class="placeholder">Available Stocks</label>
+                                            <input id="stocks_0" type="text" class="form-control input-border-bottom"
+                                                   name="stocks_0"
+                                                   required value="{{ products.stock }}" placeholder="Available Stocks">
+                                        </div>
+                                        <label id="stocks_0-error" class="error" for="stocks_0"
+                                               style="display: none"></label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label for="images" class="placeholder">Images</label>
+                                            <input type="file" class="form-control input-border-bottom" name="images_0"
+                                                   id="images_0"
+                                                   multiple>
+                                        </div>
+                                        <label id="images_0-error" class="error" for="images_0"
+                                               style="display: none"></label>
+                                    </div>
+                                </div>
+                            {% else %}
+                                {% for combination in products.product_combination %}
+                                    <div class="row" id="combination_{{ forloop.counter0 }}">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="form-label">Sizes</label>
+                                                <div class="selectgroup w-100">
+                                                    <div class="row">
+                                                        {% for size in sizes %}
+                                                            <div class="col-lg-5 col-md-5 col-sm-5">
+                                                                <label class="selectgroup-item">
+                                                                    <input type="radio"
+                                                                           name="sizes_{{ forloop.parentloop.counter0 }}"
+                                                                           value="{{ size.id }}"
+                                                                           class="selectgroup-input"
+                                                                           {% if combination.size_id.id == size.id %}checked{% endif %}>
+                                                                    <span class="selectgroup-button">{{ size.short_code }}</span>
+                                                                </label>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <label id="sizes_{{ forloop.parentloop.counter0 }}-error" class="error"
+                                                       for="sizes_{{ forloop.parentloop.counter0 }}"
+                                                       style="display: none"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label class="form-label">Colors</label>
+                                                <div class="row gutters-xs">
+                                                    <div class="row">
+                                                        {% for color in colors %}
+                                                            <div class="col-auto">
+                                                                <label class="colorinput">
+                                                                    <input name="colors_{{ forloop.parentloop.counter0 }}"
+                                                                           type="radio"
+                                                                           value="{{ color.id }}"
+                                                                           class="colorinput-input"
+                                                                           {% if combination.color_id.id == color.id %}checked{% endif %}>
+                                                                    <span class="colorinput-color"
+                                                                          style="background-color: {{ color.color_code }};"></span>
+                                                                </label>
+                                                            </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                                <label id="colors_{{ forloop.parentloop.counter0 }}-error" class="error"
+                                                       for="colors_{{ forloop.parentloop.counter0 }}"
+                                                       style="display: none"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="prices" class="placeholder">Price</label>
+                                                <input id="prices_{{ forloop.counter0 }}" type="text"
+                                                       class="form-control input-border-bottom"
+                                                       name="prices_{{ forloop.counter0 }}"
+                                                       required value="{{ combination.price }}" placeholder="Price">
+                                            </div>
+                                            <label id="prices_{{ forloop.counter0 }}-error" class="error" for="prices"
+                                                   style="display: none"></label>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="stocks" class="placeholder">Available Stocks</label>
+                                                <input id="stocks_{{ forloop.counter0 }}" type="text"
+                                                       class="form-control input-border-bottom"
+                                                       name="stocks_{{ forloop.counter0 }}"
+                                                       required value="{{ combination.stock }}"
+                                                       placeholder="Available Stocks">
+                                            </div>
+                                            <label id="stocks_{{ forloop.counter0 }}-error" class="error" for="stocks"
+                                                   style="display: none"></label>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="images" class="placeholder">Images</label>
+                                                <input type="file" class="form-control input-border-bottom"
+                                                       name="images_{{ forloop.counter0 }}"
+                                                       id="images_{{ forloop.counter0 }}"
+                                                       multiple>
+                                            </div>
+                                            <label id="images_{{ forloop.counter0 }}-error" class="error"
+                                                   for="images_{{ forloop.counter0 }}"
+                                                   style="display: none"></label>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <label class="form-group remove_row"
+                                                   onclick="RemoveRow({{ forloop.counter0 }})">&times;</label>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        {% if not products.product_combination %}
+                                            <input type="hidden" id="total_rows" name="total_rows" value="0">
+                                        {% else %}
+                                            <input type="hidden" id="total_rows" name="total_rows"
+                                                   value="{{ products.product_count }}">
+                                        {% endif %}
+                                        <a href="javascript:void(0)" class="btn btn-outline-info btn-sm"
+                                           id="add_combination">Add
+                                            more
+                                            Combinations</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <textarea type="file" class="form-control" name="description" id="description"
+                                                  required
+                                                  placeholder="Description">{{ products.description }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
+                            <input type="submit" class="btn btn-outline-success" value="Submit">
+                            <input type="hidden" id="product_id" name="product_id" value="{{ product_id }}">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% comment %}<div class="card card_footer_btn">
+        <div class="card-header">
+            <div class="card-title">
+                {{ title }}
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <form method="POST" id="product_form" name="product_form" enctype="multipart/form-data"
+              action="{% url 'product-add' %}">
+            {% csrf_token %}
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="form-label d-block">Category</label>
+                            {% for category in categories %}
+                                <label class="form-radio-label">
+                                    <input class="form-radio-input" type="radio" name="category"
+                                           value="{{ category.id }}"
+                                           {% if category.id == products.category %}checked{% endif %}>
+                                    <span class="form-radio-sign"> {{ category.name }}</span>
+                                </label>
+                            {% endfor %}
+                        </div>
+                        <label id="category-error" class="error" for="category" style="display: none"></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group form-floating-label">
+                            <input id="product_name" type="text" class="form-control input-border-bottom"
+                                   name="product_name" required value="{{ products.name }}">
+                            <label for="product_name" class="placeholder">Product Name</label>
+                        </div>
+                        <label id="product_name-error" class="error" for="product_name" style="display: none"></label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group form-floating-label">
+                            <select class="form-control input-border-bottom select_box" id="brand" name="brands"
+                                    id="brands" required>
+                                <option value="">&nbsp;</option>
+                                {% for brand in brands %}
+                                    <option value="{{ brand.id }}"
+                                            {% if brand.id == products.brands %}selected{% endif %}>{{ brand.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="brands" class="placeholder">Brand</label>
+                        </div>
+                        <label id="brand-error" class="error" for="brand" style="display: none"></label>
+                    </div>
+                </div>
+                {% if not products.product_combination %}
+                    <div class="row" id="combination_0">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Sizes</label>
+                                <div class="selectgroup w-100">
+                                    {% for size in sizes %}
+                                        <label class="selectgroup-item">
+                                            <input type="radio" name="sizes_0" value="{{ size.id }}"
+                                                   class="selectgroup-input"
+                                                   required {% if size.id in products.sizes %}checked{% endif %}>
+                                            <span class="selectgroup-button">{{ size.short_code }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                <label id="sizes_0-error" class="error" for="sizes_0" style="display: none"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-label">Colors</label>
+                                <div class="row gutters-xs">
+                                    {% for color in colors %}
+                                        <div class="col-auto">
+                                            <label class="colorinput">
+                                                <input name="colors_0" type="radio" value="{{ color.id }}"
+                                                       class="colorinput-input" required
+                                                       {% if color.id in products.colors %}checked{% endif %}>
+                                                <span class="colorinput-color"
+                                                      style="background-color: {{ color.color_code }};"></span>
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <label id="colors_0-error" class="error" for="colors_0" style="display: none"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="prices" class="placeholder">Price</label>
+                                <input id="prices_0" type="text" class="form-control input-border-bottom"
+                                       name="prices_0"
+                                       required
+                                       value="{{ products.price }}" placeholder="Price">
+                            </div>
+                            <label id="prices_0-error" class="error" for="prices_0" style="display: none"></label>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="stocks" class="placeholder">Available Stocks</label>
+                                <input id="stocks_0" type="text" class="form-control input-border-bottom"
+                                       name="stocks_0"
+                                       required value="{{ products.stock }}" placeholder="Available Stocks">
+                            </div>
+                            <label id="stocks_0-error" class="error" for="stocks_0" style="display: none"></label>
+                        </div>
+                    </div>
+                {% else %}
+                    {% for combination in products.product_combination %}
+                        <div class="row" id="combination_{{ forloop.counter0 }}">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Sizes</label>
+                                    <div class="selectgroup w-100">
+                                        {% for size in sizes %}
+                                            <label class="selectgroup-item">
+                                                <input type="radio" name="sizes_{{ forloop.parentloop.counter0 }}"
+                                                       value="{{ size.id }}"
+                                                       class="selectgroup-input"
+                                                       {% if combination.size_id.id == size.id %}checked{% endif %}>
+                                                <span class="selectgroup-button">{{ size.short_code }}</span>
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                    <label id="sizes_{{ forloop.parentloop.counter0 }}-error" class="error"
+                                           for="sizes_{{ forloop.parentloop.counter0 }}" style="display: none"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label class="form-label">Colors</label>
+                                    <div class="row gutters-xs">
+                                        {% for color in colors %}
+                                            <div class="col-auto">
+                                                <label class="colorinput">
+                                                    <input name="colors_{{ forloop.parentloop.counter0 }}" type="radio"
+                                                           value="{{ color.id }}"
+                                                           class="colorinput-input"
+                                                           {% if combination.color_id.id == color.id %}checked{% endif %}>
+                                                    <span class="colorinput-color"
+                                                          style="background-color: {{ color.color_code }};"></span>
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <label id="colors_{{ forloop.parentloop.counter0 }}-error" class="error"
+                                           for="colors_{{ forloop.parentloop.counter0 }}" style="display: none"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="prices" class="placeholder">Price</label>
+                                    <input id="prices_{{ forloop.counter0 }}" type="text"
+                                           class="form-control input-border-bottom"
+                                           name="prices_{{ forloop.counter0 }}"
+                                           required value="{{ combination.price }}" placeholder="Price">
+                                </div>
+                                <label id="prices_{{ forloop.counter0 }}-error" class="error" for="prices"
+                                       style="display: none"></label>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="stocks" class="placeholder">Available Stocks</label>
+                                    <input id="stocks_{{ forloop.counter0 }}" type="text"
+                                           class="form-control input-border-bottom"
+                                           name="stocks_{{ forloop.counter0 }}"
+                                           required value="{{ combination.stock }}" placeholder="Available Stocks">
+                                </div>
+                                <label id="stocks_{{ forloop.counter0 }}-error" class="error" for="stocks"
+                                       style="display: none"></label>
+                            </div>
+                            <div class="col-md-1">
+                                <label class="form-group remove_row"
+                                       onclick="RemoveRow({{ forloop.counter0 }})">&times;</label>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            {% if not products.product_combination %}
+                                <input type="hidden" id="total_rows" name="total_rows" value="0">
+                            {% else %}
+                                <input type="hidden" id="total_rows" name="total_rows"
+                                       value="{{ products.product_count }}">
+                            {% endif %}
+                            <a href="javascript:void(0)" class="btn btn-outline-info btn-sm" id="add_combination">Add
+                                more
+                                Combinations</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="images">Images</label>
+                            <p class="product_images">
+                                {% for image in products.images %}
+                                    <img src="{{ image.url }}" width="20" height="20">
+                                {% endfor %}
+                            </p>
+                            <input type="file" class="form-control-file" name="images" id="images" multiple>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea type="file" class="form-control" name="description" id="description" required
+                                      placeholder="Description">{{ products.description }}</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Cancel</button>
+                <input type="submit" class="btn btn-outline-success" value="Submit">
+                <input type="hidden" id="product_id" name="product_id" value="{{ product_id }}">
+            </div>
+        </form>
+    </div>{% endcomment %}
+    <div class="modal fade" id="test_modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-test"></div>
+        </div>
+    </div>
+{% endblock content %}
+{% block jquery %}
+    <script type="text/javascript">
+        var size_array = {}
+        var color_array = {}
+        var i = j = 0
+        {% for size in sizes %}
+            size_array[i] = {'id': '{{ size.id }}', 'size_code': '{{ size.short_code }}'}
+            i += 1;
+        {% endfor %}
+        {% for color in colors %}
+            color_array[j] = {'id': '{{ color.id }}', 'color_code': '{{ color.color_code }}'}
+            j += 1;
+        {% endfor %}
+        let product_size = size_array
+        let product_color = color_array
+    </script>
+    <script src="{% static 'js/product_form.js' %}" type="text/javascript"></script>
+{% endblock jquery %}

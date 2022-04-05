@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="content">
+        <div class="page-inner">
+            <div class="page-header">
+                <h4 class="page-title">{{ sub_header }}</h4>
+                <ul class="breadcrumbs">
+                    <li class="nav-home">
+                        <a href="#">
+                            <i class="fas fa-home"></i>
+                        </a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#">{{ header }}</a>
+                    </li>
+                    <li class="separator">
+                        <i class="fa fa-angle-right"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'product-list' %}">{{ sub_header }}</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <h4 class="card-title">{{ card_title }}</h4>
+                                <a title="{{ card_title }}" class="btn btn-primary btn-round ml-auto"
+                                   href="{% url 'product-add' %}">
+                                    <i class="fa fa-plus"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="data-tables display table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Category</th>
+                                        <th>Brands</th>
+                                        <th>&nbsp;</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% if products %}
+                                        {% for product in products %}
+                                            <tr>
+                                                <td>{{ product.name }}</td>
+                                                <td>{{ product.category }}</td>
+                                                <td>{{ product.brands }}</td>
+                                                <td>
+                                                    <table>
+                                                        <tr>
+                                                            <th>Size</th>
+                                                            <th>Color</th>
+                                                            <th>Price</th>
+                                                            <th>Stocks</th>
+                                                        </tr>
+                                                        {% for combination in product.combination_data %}
+                                                            <tr>
+                                                                <td>{{ combination.size_id.short_code }}</td>
+                                                                <td><span style="background-color: {{ combination.color_id.color_code }}; padding: 0px 0px 0px 10px;">&nbsp;</span></td>
+                                                                <td>{{ combination.price }}</td>
+                                                                <td>{{ combination.stock }}</td>
+                                                            </tr>
+                                                        {% endfor %}
+                                                    </table>
+                                                </td>
+                                                <td>
+                                                    <div class="form-button-action listings">
+                                                        <a href="{% url 'product-details' product_id=product.id %}"
+                                                           class="btn btn-link btn-info"><i class="fa fa-eye"></i></a>
+                                                        <a href="{% url 'product-update' product_id=product.id %}"
+                                                           class="btn btn-link btn-secondary"><i
+                                                                class="fa fa-edit"></i></a>
+                                                        <a href="javascript:void(0)" class="btn btn-link btn-danger"
+                                                           onclick="DeleteProducts({{ product.id }})"><i
+                                                                class="fa fa-times"></i></a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr align="center">
+                                            <td colspan="9">No Data Found</td>
+                                        </tr>
+                                    {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content"></div>
+        </div>
+    </div>
+
+{% endblock content %}
+{% block jquery %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".data-tables").DataTable({
+                "pageLength": 10,
+                "columns": [
+                    {
+                        "sortable": true
+                    },
+                    {
+                        "sortable": true
+                    },
+                    {
+                        "sortable": true
+                    },
+                    {
+                        "sortable": false
+                    },
+                    {
+                        "sortable": true
+                    },
+                    {
+                        "sortable": true
+                    },
+                    {
+                        "sortable": false
+                    }
+                ]
+            });
+        })
+
+        function DeleteProducts(product_id) {
+            var data = {
+                'ids': product_id,
+                'module_names': "Product",
+                'ajaxs_url': 'product-add',
+                'responses_url': 'product-list',
+            }
+            DeleteFunction(data)
+        }
+    </script>
+{% endblock jquery %}
